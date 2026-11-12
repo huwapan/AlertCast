@@ -12,13 +12,15 @@ public/                  ブラウザーに公開するページとアセット
   assets/
     css/
 src/                     PHPのアプリケーション処理
-  Data.php               データ処理の実装予定（現在は空）
+  Data.php               SQLite接続と初回マイグレーション
 docs/                    要件・設計メモ
 ```
 
 ## 現在の状態
 
-画面の静的なひな形です。予定の保存や表示、PHP・データベースとの連携はまだ実装していません。`public/index.html` をブラウザーで開くと確認できます。
+画面は静的なひな形で、予定の登録・表示などのCRUD機能は未実装です。
+
+`src/Data.php` の `getDatabaseConnection()` をPHPから呼ぶと、`database/alertcast.sqlite` が作成され、`database/migrations/` の初回マイグレーションが適用されます。PHPの `pdo_sqlite` 拡張が必要です。`public/index.html` を直接開いただけではデータベースは作成されません。
 
 ## 今後の追加先
 
