@@ -8,20 +8,29 @@
 public/                  ブラウザーに公開するページとアセット
   index.html
   schedule-edit.html
-  schedule-create.php    時間指定予定の登録処理
+  register-schedule.php  予定登録のHTTPエンドポイント
   show-table.html
   assets/
     css/
 src/                     PHPのアプリケーション処理
   Data.php               SQLite接続と初回マイグレーション
+  schedule-create.php    時間指定予定の入力検証と保存
 docs/                    要件・設計メモ
 ```
 
 ## 現在の状態
 
-時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。予定の表示・変更・削除や、終日予定・期限予定の登録は未実装です。
+時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。予定の一覧表示・変更・削除や、終日予定・期限予定の登録は未実装です。
 
 `src/Data.php` の `getDatabaseConnection()` をPHPから呼ぶと、`database/alertcast.sqlite` が作成され、`database/migrations/` の初回マイグレーションが適用されます。PHPの `pdo_sqlite` 拡張が必要です。`public/index.html` を直接開いただけではデータベースは作成されません。
+
+## ローカルでの起動
+
+プロジェクトのルートディレクトリで次のコマンドを実行し、`http://127.0.0.1:8000` を開きます。
+
+```powershell
+php -S 127.0.0.1:8000 -t public
+```
 
 ## 実行環境の準備（Windows）
 

@@ -97,4 +97,5 @@ try {
     exit;
 }
 
-renderMessagePage('登録しました', '時間指定予定を登録しました。', 201);
+header('Location: schedule-edit.html?registered=1', true, 303);
+exit;

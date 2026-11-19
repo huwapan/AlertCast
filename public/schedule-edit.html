@@ -1,2 +1,50 @@
 <!--予定の入力・変更・破棄・復元が出来るページ-->
-<a href="schedule-edit.html">スケジュール編集ページ</a>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>予定の入力・変更・破棄・復元が出来るページ</title>
+        <link rel="stylesheet" href="assets/css/index.css">
+    </head>
+    <body>
+        <a href="index.html">home</a>
+        <h1>予定の入力・変更・破棄・復元が出来るページ</h1>
+        <p id="registration-message" role="status" aria-live="polite" hidden>
+            時間指定予定を登録しました。
+        </p>
+        <section>
+            <h2>時間指定予定の登録</h2>
+            <form action="register-schedule.php" method="post">
+                <p>
+                    <label for="title">タイトル</label>
+                    <input id="title" name="title" type="text" required>
+                </p>
+                <p>
+                    <label for="start_at">開始日時</label>
+                    <input id="start_at" name="start_at" type="datetime-local" required>
+                </p>
+                <p>
+                    <label for="end_at">終了日時</label>
+                    <input id="end_at" name="end_at" type="datetime-local" required>
+                </p>
+                <p>
+                    <label for="priority">優先度（1以上）</label>
+                    <input id="priority" name="priority" type="number" min="1" step="1" value="1" required>
+                </p>
+                <button type="submit">予定を登録</button>
+            </form>
+        </section>
+        <!--予定の変更フォーム-->
+        <p>予定の変更フォーム</p>
+        <!--予定の破棄フォーム-->
+        <p>予定の破棄フォーム</p>
+        <!--予定の復元フォーム-->
+        <p>予定の復元フォーム</p>
+        <script>
+            const query = new URLSearchParams(window.location.search);
+            if (query.get('registered') === '1') {
+                document.getElementById('registration-message').hidden = false;
+                window.history.replaceState(null, '', window.location.pathname);
+            }
+        </script>
+    </body>
+</html>
