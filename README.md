@@ -28,7 +28,7 @@ src/                     PHPのアプリケーション処理
   schedule-reminder.php  ホームに出す予定（今日の予定・完了通知・期限超過）の取得
 database/migrations/     データベースの変更SQL（番号順に自動で適用）
 docs/                    要件・設計メモ
-planMD/                  機能ごとの実装計画書
+planMD/                  機能ごとの実装計画書と、アプリ全体の開発ロードマップ
 ```
 
 ## 現在の状態
@@ -60,6 +60,6 @@ PHPをインストールし、コマンドプロンプトまたはPowerShellか�
 ## 今後の追加先
 
 - データベースの変更SQLは `database/migrations/`（`003_...sql` のように次の番号を付ける）
-- 機能ごとの実装計画書は `planMD/`（`005_...md` のように次の番号を付ける。`000a`〜`000c` は、Copilot で作っていたころの作業を Git の履歴と会話記録からあとで書き起こしたもの）
+- 機能ごとの実装計画書は `planMD/`（`005_...md` のように次の番号を付ける。`000a`〜`000c` は、Copilot で作っていたころの作業を Git の履歴と会話記録からあとで書き起こしたもの）。アプリ全体をどの順番で作るかは [planMD/app-development-roadmap.md](planMD/app-development-roadmap.md) にまとめている
 - テストは `tests/`
 - 画面の動作を担うJavaScriptは `public/assets/js/`
