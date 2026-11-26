@@ -35,7 +35,7 @@ $isDeleted = ($_GET['deleted'] ?? null) === '1';
         <link rel="stylesheet" href="assets/css/index.css">
     </head>
     <body>
-        <a href="index.html">ホーム</a> | <a href="schedule-edit.html">スケジュール編集ページに戻る</a>
+        <a href="index.php">ホーム</a> | <a href="schedule-edit.html">スケジュール編集ページに戻る</a>
         <h1>予定の削除</h1>
         <?php if ($isDeleted): ?>
             <p role="status">予定を削除しました。</p>

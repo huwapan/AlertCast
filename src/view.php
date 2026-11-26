@@ -30,5 +30,5 @@ function renderMessagePage(
         . '">'
         . escapeHtml($backLabel)
         . '</a> | '
-        . '<a href="index.html">ホーム</a></p></body></html>';
+        . '<a href="index.php">ホーム</a></p></body></html>';
 }

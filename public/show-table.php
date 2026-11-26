@@ -30,7 +30,7 @@ try {
         <link rel="stylesheet" href="assets/css/show-table.css">
     </head>
     <body>
-        <a href="index.html">ホーム</a>
+        <a href="index.php">ホーム</a>
         <h1>優先度順の予定一覧</h1>
         <?php if ($schedules === null): ?>
             <p role="alert">予定を読み込めませんでした。時間をおいて再度お試しください。</p>
