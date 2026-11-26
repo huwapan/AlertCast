@@ -6,9 +6,10 @@
 ## ディレクトリ構成
 ```text
 public/                  ブラウザーに公開するページとアセット
-  index.html
+  index.php              ホーム（終わった予定の完了通知と完了ボタン）
   schedule-edit.html
   register-schedule.php  予定登録のHTTPエンドポイント
+  complete-schedule.php  予定完了のHTTPエンドポイント
   delete-schedule-form.php  予定の削除フォーム（schedule-edit.html から移動）
   delete-schedule.php    予定削除のHTTPエンドポイント
   show-table.php         優先度順の予定一覧（見るためのページ）
@@ -19,6 +20,7 @@ src/                     PHPのアプリケーション処理
   view.php               HTMLエスケープとメッセージ画面の共通関数
   schedule-create.php    時間指定予定の入力検証と保存
   schedule-delete.php    予定の論理削除
+  schedule-complete.php  予定の完了の記録
 database/migrations/     データベースの変更SQL（番号順に自動で適用）
 docs/                    要件・設計メモ
 planMD/                  機能ごとの実装計画書
@@ -26,9 +28,9 @@ planMD/                  機能ごとの実装計画書
 
 ## 現在の状態
 
-時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。登録済みの時間指定予定は、優先度順で `show-table.php` に表示されます（見るためのページで、操作はできません）。予定を削除するときは、`schedule-edit.html` の「予定の破棄フォーム」から削除フォーム（`delete-schedule-form.php`）に移動し、予定を選んで削除します。削除は論理削除で、行は残したまま `deleted_at` に削除日時を記録し、一覧と削除フォームには表示しません。予定の変更・復元や、終日予定・期限予定の登録は未実装です。
+時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。登録済みの時間指定予定は、優先度順で `show-table.php` に表示され、完了したかどうかも分かります（見るためのページで、操作はできません）。終了日時を過ぎて、まだ完了していない予定は、ホーム（`index.php`）に「終わった予定があります。完了しましたか？」と通知されます。「完了」ボタンを押すと `completed_at` に完了日時を記録します。予定を削除するときは、`schedule-edit.html` の「予定の破棄フォーム」から削除フォーム（`delete-schedule-form.php`）に移動し、予定を選んで削除します。削除は論理削除で、行は残したまま `deleted_at` に削除日時を記録し、一覧と削除フォームには表示しません。予定の変更・復元や、終日予定・期限予定の登録は未実装です。
 
-`src/Data.php` の `getDatabaseConnection()` をPHPから呼ぶと、`database/alertcast.sqlite` が作成され、`database/migrations/` のSQLファイルのうち未適用のものがファイル名の番号順に適用されます。適用済みのものは `schema_migrations` テーブルに記録されます。PHPの `pdo_sqlite` 拡張が必要です。`public/index.html` を直接開いただけではデータベースは作成されません。
+`src/Data.php` の `getDatabaseConnection()` をPHPから呼ぶと、`database/alertcast.sqlite` が作成され、`database/migrations/` のSQLファイルのうち未適用のものがファイル名の番号順に適用されます。適用済みのものは `schema_migrations` テーブルに記録されます。PHPの `pdo_sqlite` 拡張が必要です。ページはPHPで動くので、ファイルを直接開かずに、下の「ローカルでの起動」の方法で開いてください。
 
 ## ローカルでの起動
 

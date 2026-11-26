@@ -9,7 +9,7 @@ header('Content-Type: text/html; charset=UTF-8');
 try {
     $connection = getDatabaseConnection();
     $statement = $connection->query(
-        "SELECT title, start_at, end_at, priority
+        "SELECT title, start_at, end_at, priority, completed_at
          FROM schedules
          WHERE schedule_type = 'time_block'
            AND deleted_at IS NULL
@@ -30,7 +30,7 @@ try {
         <link rel="stylesheet" href="assets/css/show-table.css">
     </head>
     <body>
-        <a href="index.html">ホーム</a>
+        <a href="index.php">ホーム</a>
         <h1>優先度順の予定一覧</h1>
         <?php if ($schedules === null): ?>
             <p role="alert">予定を読み込めませんでした。時間をおいて再度お試しください。</p>
@@ -44,6 +44,7 @@ try {
                         <th scope="col">タイトル</th>
                         <th scope="col">開始日時</th>
                         <th scope="col">終了日時</th>
+                        <th scope="col">状態</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,6 +54,8 @@ try {
                             <td><?= escapeHtml($schedule['title']) ?></td>
                             <td><?= escapeHtml($schedule['start_at']) ?></td>
                             <td><?= escapeHtml($schedule['end_at']) ?></td>
+                            <!--completed_at に日時が入っていれば完了-->
+                            <td><?= $schedule['completed_at'] === null ? '未完了' : '完了' ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
