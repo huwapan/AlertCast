@@ -18,11 +18,15 @@ if (is_string($schedule)) {
     exit;
 }
 
+//作成日時・更新日時（日本時間）
+//列の初期値（CURRENT_TIMESTAMP）は世界標準時（UTC）になるので、かならずここで入れる
+$now = (new DateTimeImmutable('now', new DateTimeZone('Asia/Tokyo')))->format('Y-m-d H:i:s');
+
 try {
     $connection = getDatabaseConnection();
     $statement = $connection->prepare(
-        'INSERT INTO schedules (title, schedule_type, start_at, end_at, priority)
-         VALUES (:title, :schedule_type, :start_at, :end_at, :priority)'
+        'INSERT INTO schedules (title, schedule_type, start_at, end_at, priority, created_at, updated_at)
+         VALUES (:title, :schedule_type, :start_at, :end_at, :priority, :created_at, :updated_at)'
     );
     $statement->execute([
         'title' => $schedule['title'],
@@ -30,6 +34,8 @@ try {
         'start_at' => $schedule['start_at'],
         'end_at' => $schedule['end_at'],
         'priority' => $schedule['priority'],
+        'created_at' => $now,
+        'updated_at' => $now,
     ]);
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
