@@ -9,8 +9,9 @@ public/                  ブラウザーに公開するページとアセット
   index.html
   schedule-edit.html
   register-schedule.php  予定登録のHTTPエンドポイント
+  delete-schedule-form.php  予定の削除フォーム（schedule-edit.html から移動）
   delete-schedule.php    予定削除のHTTPエンドポイント
-  show-table.php         優先度順の予定一覧（削除ボタン付き）
+  show-table.php         優先度順の予定一覧（見るためのページ）
   assets/
     css/
 src/                     PHPのアプリケーション処理
@@ -25,7 +26,7 @@ planMD/                  機能ごとの実装計画書
 
 ## 現在の状態
 
-時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。登録済みの時間指定予定は、優先度順で `show-table.php` に表示されます。一覧の削除ボタンで予定を削除できます。削除は論理削除で、行は残したまま `deleted_at` に削除日時を記録し、一覧には表示しません。予定の変更・復元や、終日予定・期限予定の登録は未実装です。
+時間指定予定を `schedule-edit.html` から登録し、SQLiteに保存できます。登録済みの時間指定予定は、優先度順で `show-table.php` に表示されます（見るためのページで、操作はできません）。予定を削除するときは、`schedule-edit.html` の「予定の破棄フォーム」から削除フォーム（`delete-schedule-form.php`）に移動し、予定を選んで削除します。削除は論理削除で、行は残したまま `deleted_at` に削除日時を記録し、一覧と削除フォームには表示しません。予定の変更・復元や、終日予定・期限予定の登録は未実装です。
 
 `src/Data.php` の `getDatabaseConnection()` をPHPから呼ぶと、`database/alertcast.sqlite` が作成され、`database/migrations/` のSQLファイルのうち未適用のものがファイル名の番号順に適用されます。適用済みのものは `schema_migrations` テーブルに記録されます。PHPの `pdo_sqlite` 拡張が必要です。`public/index.html` を直接開いただけではデータベースは作成されません。
 

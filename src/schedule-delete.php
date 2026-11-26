@@ -4,14 +4,14 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Data.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'view.php';
 
-//エラー画面の戻り先（予定一覧）
-const DELETE_BACK_URL = 'show-table.php';
-const DELETE_BACK_LABEL = '一覧に戻る';
+//エラー画面の戻り先（削除フォーム）
+const DELETE_BACK_URL = 'delete-schedule-form.php';
+const DELETE_BACK_LABEL = '削除フォームに戻る';
 
 //POST以外のアクセスは受け付けない
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Allow: POST');
-    renderMessagePage('削除できません', 'このページは予定一覧の削除ボタンから送信してください。', 405, DELETE_BACK_URL, DELETE_BACK_LABEL);
+    renderMessagePage('削除できません', 'このページは予定の削除フォームから送信してください。', 405, DELETE_BACK_URL, DELETE_BACK_LABEL);
     exit;
 }
 
@@ -50,6 +50,6 @@ if ($statement->rowCount() === 0) {
     exit;
 }
 
-//削除できたら一覧に戻る（再読み込みで二重送信しないように303でリダイレクト）
-header('Location: show-table.php?deleted=1', true, 303);
+//削除できたら削除フォームに戻る（再読み込みで二重送信しないように303でリダイレクト）
+header('Location: delete-schedule-form.php?deleted=1', true, 303);
 exit;
