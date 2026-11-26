@@ -44,44 +44,55 @@ function applyDatabaseMigrations(PDO $connection, string $projectRoot): void
         )'
     );
 
-    //スケジュールテーブルの作成
-    $migrationVersion = '001_create_schedules.sql';
-    $migrationPath = $projectRoot
+    //migrationsフォルダのSQLファイルを番号順（ファイル名順）に取得
+    $migrationDirectory = $projectRoot
         . DIRECTORY_SEPARATOR . 'database'
-        . DIRECTORY_SEPARATOR . 'migrations'
-        . DIRECTORY_SEPARATOR . $migrationVersion;
-    $connection->beginTransaction();
-    //マイグレーションの適用
-    try {
-        //マイグレーションが適用済みか確認
-        $check = $connection->prepare(
-            'SELECT 1 FROM schema_migrations WHERE version = :version'
-        );
-        $check->execute(['version' => $migrationVersion]);
-        //適用済みでなければマイグレーションを実行
-        if ($check->fetchColumn() === false) {
-            $migrationSql = file_get_contents($migrationPath);
-            //マイグレーションSQLが読み込めなかった場合は例外を投げる
-            if ($migrationSql === false) {
-                throw new RuntimeException('Could not read the schedule database migration.');
+        . DIRECTORY_SEPARATOR . 'migrations';
+    $migrationPaths = glob($migrationDirectory . DIRECTORY_SEPARATOR . '*.sql');
+    if ($migrationPaths === false) {
+        throw new RuntimeException('Could not list the database migrations.');
+    }
+    sort($migrationPaths, SORT_STRING);
+
+    //適用済みか確認するSQLと、適用履歴を記録するSQLを準備
+    $check = $connection->prepare(
+        'SELECT 1 FROM schema_migrations WHERE version = :version'
+    );
+    $record = $connection->prepare(
+        'INSERT INTO schema_migrations (version) VALUES (:version)'
+    );
+
+    //マイグレーションを1ファイルずつ適用
+    foreach ($migrationPaths as $migrationPath) {
+        //バージョン名はファイル名（例：001_create_schedules.sql）
+        $migrationVersion = basename($migrationPath);
+        $connection->beginTransaction();
+        try {
+            //マイグレーションが適用済みか確認
+            $check->execute(['version' => $migrationVersion]);
+            $isApplied = $check->fetchColumn() !== false;
+            $check->closeCursor();
+            //適用済みでなければマイグレーションを実行
+            if (!$isApplied) {
+                $migrationSql = file_get_contents($migrationPath);
+                //マイグレーションSQLが読み込めなかった場合は例外を投げる
+                if ($migrationSql === false) {
+                    throw new RuntimeException('Could not read the database migration: ' . $migrationVersion);
+                }
+                //マイグレーションSQLを実行
+                $connection->exec($migrationSql);
+                //マイグレーションの適用履歴を記録
+                $record->execute(['version' => $migrationVersion]);
             }
-            //マイグレーションSQLを実行
-            $connection->exec($migrationSql);
-            //マイグレーションの適用履歴を記録
-            $record = $connection->prepare(
-                'INSERT INTO schema_migrations (version) VALUES (:version)'
-            );
-            //マイグレーションの適用履歴を記録
-            $record->execute(['version' => $migrationVersion]);
+            //トランザクションをコミット
+            $connection->commit();
+        } catch (Throwable $exception) {
+            //トランザクションをロールバックして例外を再スロー
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            throw $exception;
         }
-        //トランザクションをコミット
-        $connection->commit();
-        //トランザクションをロールバックして例外を再スロー
-    } catch (Throwable $exception) {
-        if ($connection->inTransaction()) {
-            $connection->rollBack();
-        }
-        throw $exception;
     }
 }
         
