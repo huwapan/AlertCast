@@ -10,21 +10,27 @@ header('Content-Type: text/html; charset=UTF-8');
 //ホームに出す予定を取得する（今の日時は日本時間）
 //・今日の予定：今日にかかる予定（完了済みも含める）
 //・完了通知：終わってから1日以内で、まだ完了していない予定
-//・期限を超過した予定：終わってから1日以上たっても、まだ完了していない予定
+//・期限を超過した予定：終わってから1日以上3日未満で、まだ完了していない予定
+//・長く放置されている予定：終わってから3日以上たっても、まだ完了していない予定
 $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Tokyo'));
 $todaySchedules = [];
 $endedSchedules = [];
 $overdueSchedules = [];
+$neglectedSchedules = [];
 $hasLoadError = false;
 try {
     $connection = getDatabaseConnection();
     $todaySchedules = fetchTodaySchedules($connection, $now);
     $endedSchedules = fetchRecentlyEndedSchedules($connection, $now);
     $overdueSchedules = fetchOverdueSchedules($connection, $now);
+    $neglectedSchedules = fetchNeglectedSchedules($connection, $now);
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
     $hasLoadError = true;
 }
+
+//長く放置されているとみなす日数（NEGLECTED_PERIOD の「P3D」から 3 を取り出す）
+$neglectedDays = (new DateInterval(NEGLECTED_PERIOD))->d;
 
 //完了処理から戻ってきたときにメッセージを表示する
 $isCompleted = ($_GET['completed'] ?? null) === '1';
@@ -111,7 +117,7 @@ $isCompleted = ($_GET['completed'] ?? null) === '1';
                     </ul>
                 </section>
             <?php endif; ?>
-            <!--期限を超過した予定一覧（終わってから1日たっても完了していない予定があるときだけ表示する）-->
+            <!--期限を超過した予定一覧（終わってから1日以上3日未満で、完了していない予定があるときだけ表示する）-->
             <?php if ($overdueSchedules !== []): ?>
                 <section aria-labelledby="overdue-schedules-heading">
                     <h2 id="overdue-schedules-heading">期限を超過した予定があります。忘れていませんか？</h2>
@@ -127,6 +133,29 @@ $isCompleted = ($_GET['completed'] ?? null) === '1';
                             </li>
                         <?php endforeach; ?>
                     </ul>
+                </section>
+            <?php endif; ?>
+            <!--長く放置されている予定一覧（終わってから3日以上たっても完了していない予定があるときだけ表示する）-->
+            <?php if ($neglectedSchedules !== []): ?>
+                <section aria-labelledby="neglected-schedules-heading">
+                    <h2 id="neglected-schedules-heading">長く放置されている予定があります</h2>
+                    <p>終わってから<?= $neglectedDays ?>日以上たっても、完了になっていません。終わっていれば「完了」を押してください。日時が変わった予定は変更してください。</p>
+                    <ul>
+                        <?php foreach ($neglectedSchedules as $schedule): ?>
+                            <li>
+                                <?= escapeHtml($schedule['title']) ?>
+                                （<?= escapeHtml($schedule['start_at']) ?> 〜 <?= escapeHtml($schedule['end_at']) ?>）
+                                終了から<?= countElapsedDays($schedule['end_at'], $now) ?>日
+                                <form action="complete-schedule.php" method="post">
+                                    <input type="hidden" name="id" value="<?= (int) $schedule['id'] ?>">
+                                    <button type="submit">完了</button>
+                                </form>
+                                <!--変更フォームを、この予定を選んだ状態で開く-->
+                                <a href="update-schedule-form.php?id=<?= (int) $schedule['id'] ?>">この予定を変更する</a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <p>いらなくなった予定は、<a href="delete-schedule-form.php">削除フォーム</a>から削除できます。</p>
                 </section>
             <?php endif; ?>
         <?php endif; ?>
