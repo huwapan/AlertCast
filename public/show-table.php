@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Data.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'view.php';
 
 header('Content-Type: text/html; charset=UTF-8');
 
@@ -18,11 +19,6 @@ try {
     error_log($exception->getMessage());
     http_response_code(500);
     $schedules = null;
-}
-
-function escapeHtml(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 ?>
 <!DOCTYPE html>
