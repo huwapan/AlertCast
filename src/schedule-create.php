@@ -2,23 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Data.php';
-
-function renderMessagePage(string $heading, string $message, int $statusCode): void
-{
-    http_response_code($statusCode);
-    header('Content-Type: text/html; charset=UTF-8');
-
-    $escapedHeading = htmlspecialchars($heading, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-    $escapedMessage = htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-    echo '<!DOCTYPE html><html lang="ja"><meta charset="UTF-8"><title>'
-        . $escapedHeading
-        . '</title><body><h1>'
-        . $escapedHeading
-        . '</h1><p>'
-        . $escapedMessage
-        . '</p><p><a href="schedule-edit.html">登録画面に戻る</a> | '
-        . '<a href="index.html">ホーム</a></p></body></html>';
-}
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'view.php';
 
 function parseLocalDateTime(string $value): ?string
 {
